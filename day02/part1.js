@@ -13,9 +13,9 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
         const maxGreen = 13;
         const maxBlue = 14;
 
-        const redRexEx = /\d+ red/g;
-        const greenRegEx = /\d+ green/g;
-        const blueRegEx = /\d+ blue/g;
+        const redRegEx = /\d+ red/;
+        const greenRegEx = /\d+ green/;
+        const blueRegEx = /\d+ blue/;
 
         // Below code transforms input data into array
         // of objects that holds gameID and sets drawn
@@ -41,13 +41,10 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
         //     }
         // ]
         const games = data.reduce((games,game,idx) => {
-            const singleGame = {
-                gameID: idx+1
-            }
             const samples = game.split(': ')[1].split('; ');
 
             const sets = samples.map(sample => {
-                let numOfRed = sample.match(redRexEx) ? parseInt(sample.match(redRexEx)[0].split(' ')[0]) : 0;
+                let numOfRed = sample.match(redRegEx) ? parseInt(sample.match(redRegEx)[0].split(' ')[0]) : 0;
                 let numOfGreen = sample.match(greenRegEx) ? parseInt(sample.match(greenRegEx)[0].split(' ')[0]) : 0;
                 let numOfBlue = sample.match(blueRegEx) ? parseInt(sample.match(blueRegEx)[0].split(' ')[0]) : 0;
             
@@ -60,8 +57,11 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
                 return set;
             },[]);
 
-            singleGame.sets = sets;
-            games.push(singleGame);
+            games.push({
+                gameID: idx+1,
+                sets
+            });
+
             return games;
         },[]);
 
