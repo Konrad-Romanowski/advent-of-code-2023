@@ -7,35 +7,33 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
     if(err) {
         console.log(`Cannot open the file: ${inputPath}`);
     } else {
-        const data = inputFileData.split('\r\n');
+        const data = inputFileData.split('\n');
 
-        const winningNumbers = data.map(row => {
-            return row.split(" |")[0].match(/\d+/g).slice(1).reduce((numbers,number)=>{
+        const cards = data.map(card => {
+            const winningNumbers = card.split(" |")[0].match(/\d+/g).slice(1).reduce((numbers,number) => {
                 number in numbers ? numbers[number] += 1 : numbers[number] = 1;
                 return numbers;
             },{});
-        });
 
-        const playerNumbers = data.map(row => {
-            return row.split(" |")[1].match(/\d+/g).reduce((numbers,number)=>{
-                number in numbers ? numbers[number] += 1 : numbers[number] = 0;
-                return numbers;
-            },{});
-        });
+            const playerNumbers = card.split(" |")[1].match(/\d+/g);
 
-        playerNumbers.forEach((card,cardNumber)=>{
-            for(let num in card) {
-                if(num in winningNumbers[cardNumber]) playerNumbers[cardNumber][num]+=1;
+            return {
+                winningNumbers,
+                playerNumbers,
+                matchingNumbers: 0,
+                score: 0,
             }
         });
-        
-        const score = playerNumbers.reduce((score,card)=>{
-            let numOfWinningNumbers = 0;
-            for(let num in card) {
-                numOfWinningNumbers += card[num];
+
+        cards.forEach(card => {
+            for(let num of card.playerNumbers) {
+                if(card.winningNumbers[num]) card.matchingNumbers++;
             }
-            if(numOfWinningNumbers === 0) return score + 0;
-            return score += 2 ** (numOfWinningNumbers-1);
+            card.score = (card.matchingNumbers > 0) ? 2 ** (card.matchingNumbers-1) : 0;
+        });
+
+        const score = cards.reduce((total,card) => {
+            return total+=card.score;
         },0);
 
         console.log(score);
