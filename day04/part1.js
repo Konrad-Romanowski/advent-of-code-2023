@@ -9,13 +9,13 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
     } else {
         const data = inputFileData.split('\n');
 
-        const cards = data.map(card => {
-            const winningNumbers = card.split(" |")[0].match(/\d+/g).slice(1).reduce((numbers,number) => {
+        const cards = data.map(row => {
+            const winningNumbers = row.split(" |")[0].match(/\d+/g).slice(1).reduce((numbers,number) => {
                 number in numbers ? numbers[number] += 1 : numbers[number] = 1;
                 return numbers;
             },{});
 
-            const playerNumbers = card.split(" |")[1].match(/\d+/g);
+            const playerNumbers = row.split(" |")[1].match(/\d+/g);
 
             return {
                 winningNumbers,
