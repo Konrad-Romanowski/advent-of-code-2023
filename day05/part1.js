@@ -3,21 +3,14 @@ const path = require('path');
 
 const inputPath = path.join(__dirname, 'input.txt');
 
-const steps = [
-    'seed-to-soil',
-    'soil-to-fertilizer',
-    'fertilizer-to-water',
-    'water-to-light',
-    'light-to-temperature',
-    'temperature-to-humidity',
-    'humidity-to-location'
-]
-
-function getMapFromAlmanac(mapName,almanac) {
-    const start = almanac.indexOf(`${mapName} map:`);
+// Below function reads mapping rules for each step from the input
+// and returns it in an easier to use structure.
+function getMappingFromAlmanac(step,almanac) {
+    const start = almanac.indexOf(`${step} map:`);
     const temp = almanac.slice(start);
 
     let end;
+    // Below condition solves issue with reading last part of mapping i.e. 'humidity-to-location map:'
     if(temp.indexOf('') === -1) {
         end = start + temp.length;
     } else {
@@ -33,22 +26,34 @@ function getMapFromAlmanac(mapName,almanac) {
     });
 }
 
-function mapValue(value,step,almanac) {
-    let newValue = value;
-    const mapType = getMapFromAlmanac(step,almanac);
-
-    mapType.forEach(map => {
-        if(map.sourceRangeStart <= value && value <= map.sourceRangeStart + map.rangeLength - 1) {
-            newValue = map.destinationRangeStart + value - map.sourceRangeStart;
+// Below function applies correct mapping rule based on the input
+// and returns mapped value.
+function mapValue(value,mappingRules) {
+    // We are checking if the value falls into one of the ranges
+    for(let i = 0 ; i < mappingRules.length; i++) {
+        if(mappingRules[i].sourceRangeStart <= value && value <= mappingRules[i].sourceRangeStart + mappingRules[i].rangeLength - 1) {
+            return mappingRules[i].destinationRangeStart + value - mappingRules[i].sourceRangeStart;
         }
-    });
-    return newValue;
+    }
+    return value;
+
+    // Easier to understand alternative below.
+    // However, this solution keeps looping even if
+    // the actual range has been already found.
+
+    // let newValue = value;
+    // mappingRules.forEach(rule => {
+    //     if(rule.sourceRangeStart <= value && value <= rule.sourceRangeStart + rule.rangeLength - 1) {
+    //         newValue = rule.destinationRangeStart + value - rule.sourceRangeStart;
+    //     }
+    // });
+    // return newValue;
 }
 
-function getLocation(seed,steps,almanac) {
+function getLocation(seed,mapping) {
     let currentValue = seed;
-    steps.forEach(step => {
-        currentValue = mapValue(currentValue,step,almanac);
+    mapping.forEach(mappingStep => {
+        currentValue = mapValue(currentValue,mappingStep.mappingRules);
     });
 
     return currentValue;
@@ -59,10 +64,26 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
         console.log(`Cannot open the file: ${inputPath}`);
     } else {
         const almanac = inputFileData.split('\r\n');
-
         const seeds = almanac[0].match(/\d+/g).map(seed => parseInt(seed));
 
-        const locations = seeds.map(seed => getLocation(seed,steps,almanac));
+        const steps = [
+            'seed-to-soil',
+            'soil-to-fertilizer',
+            'fertilizer-to-water',
+            'water-to-light',
+            'light-to-temperature',
+            'temperature-to-humidity',
+            'humidity-to-location'
+        ];
+
+        const mapping = steps.map(step => {
+            return {
+                step,
+                mappingRules: getMappingFromAlmanac(step,almanac)
+            }
+        },{});
+        
+        const locations = seeds.map(seed => getLocation(seed,mapping));
 
         let MIN = Infinity;
         locations.forEach(location => {
