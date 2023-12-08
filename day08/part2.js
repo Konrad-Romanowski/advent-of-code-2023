@@ -12,7 +12,7 @@ function GCD(a, b) {
     }
 }
 
-// Least Common Multiplyer
+// Least Common Multiple
 function LCM(a, b) {
     return (a * b) / GCD(a, b);
 }
