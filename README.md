@@ -1,4 +1,4 @@
-# Advent of Code 2022
+# Advent of Code 2023
 
 This repository consists of my solutions to Advent of Code 2022 daily code challanges:
 
