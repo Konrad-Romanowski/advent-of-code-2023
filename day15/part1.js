@@ -21,7 +21,7 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
 
         const result = values.reduce((sum,num)=>{
             return sum+=num;
-        },0)
+        },0);
 
         console.log(result);
     }
