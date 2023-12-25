@@ -48,6 +48,7 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
                 if(points[i].a !== points[j].a) {
                     const {x,y} = getIntersectionPoint(points[i],points[j]);
                     if(x0 <= x && x <= x1 && y0 <= y && y <= y1) {
+                        // check if paths cross only in the future
                         if (
                             points[i].dx <= 0 && x <= points[i].x &&
                             points[j].dx <= 0 && x <= points[j].x ||
@@ -66,8 +67,5 @@ fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
         }
 
         console.log(counter);
-
-        // console.log(points[0])
-        // console.log(points[4])
     }
 });
