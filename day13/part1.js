@@ -53,12 +53,9 @@ function scanRows(mirror) {
         let topIdx = i;
         let bottomIdx = i+1;
 
-        let topRow;
-        let bottomRow;
-
         while(topIdx >= 0 && bottomIdx < mirror.length) {
-            topRow = mirror[topIdx];
-            bottomRow = mirror[bottomIdx];
+            let topRow = mirror[topIdx];
+            let bottomRow = mirror[bottomIdx];
             if(!compareRows(topRow,bottomRow)) {
                 isMirror = false;
                 break;
@@ -75,31 +72,9 @@ function scanRows(mirror) {
 function scanColumns(mirror) {
     mirror = transpose(mirror);
 
-    for(let i = 0; i < mirror.length-1; i++) {
-        let isMirror = true;
+    const result = scanRows(mirror);
 
-        let startingIndex = i;
-        
-        let topIdx = i;
-        let bottomIdx = i+1;
-
-        let topRow;
-        let bottomRow;
-
-        while(topIdx >= 0 && bottomIdx < mirror.length) {
-            topRow = mirror[topIdx];
-            bottomRow = mirror[bottomIdx];
-            if(!compareRows(topRow,bottomRow)) {
-                isMirror = false;
-                break;
-            }
-            topIdx--;
-            bottomIdx++;
-        }
-        if(isMirror) return startingIndex+1;
-    }
-    
-    return 0;
+    return result/100;
 }
 
 fs.readFile(inputPath,'utf-8',(err,inputFileData) => {
