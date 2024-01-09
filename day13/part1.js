@@ -71,9 +71,8 @@ function scanRows(mirror) {
 
 function scanColumns(mirror) {
     mirror = transpose(mirror);
-
     const result = scanRows(mirror);
-
+    
     return result/100;
 }
 
